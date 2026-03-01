@@ -17,6 +17,12 @@ class TaskConfig:
     ground_truth_format: str
     few_shot_samples: Optional[List[Dict[str, Any]]] = None
     stop: Optional[str] = None
+    # limit the number of examples to load from each split (None==all)
+    max_train_examples: Optional[int] = None
+    max_test_examples: Optional[int] = None
+    # optional filters (only used by datasets that include these fields)
+    allowed_levels: Optional[List[str]] = None
+    allowed_types: Optional[List[str]] = None
 
 
 class Task(ABC):
@@ -25,9 +31,42 @@ class Task(ABC):
         self._load_dataset()
 
     def _load_dataset(self) -> None:
-        """Load dataset from HuggingFace"""
-        self.train_dataset = HuggingFaceDataset(self.config.dataset_path, self.config.dataset_name, split=self.config.training_split).load()
-        self.test_dataset = HuggingFaceDataset(self.config.dataset_path, self.config.dataset_name, split=self.config.test_split).load()
+        """Load dataset from HuggingFace and apply any size limits."""
+        self.train_dataset = HuggingFaceDataset(
+            self.config.dataset_path,
+            self.config.dataset_name,
+            split=self.config.training_split
+        ).load()
+        self.test_dataset = HuggingFaceDataset(
+            self.config.dataset_path,
+            self.config.dataset_name,
+            split=self.config.test_split
+        ).load()
+
+        # apply optional filters (level/type) before sampling
+        if self.config.allowed_levels is not None:
+            self.train_dataset = [ex for ex in self.train_dataset if ex.get("level") in self.config.allowed_levels]
+            self.test_dataset = [ex for ex in self.test_dataset if ex.get("level") in self.config.allowed_levels]
+        if self.config.allowed_types is not None:
+            self.train_dataset = [ex for ex in self.train_dataset if ex.get("type") in self.config.allowed_types]
+            self.test_dataset = [ex for ex in self.test_dataset if ex.get("type") in self.config.allowed_types]
+
+        # apply optional limits
+        # use a fixed seed for reproducible sampling
+        if self.config.max_train_examples is not None:
+            import random
+            random.seed(42)
+            self.train_dataset = random.sample(
+                self.train_dataset,
+                min(self.config.max_train_examples, len(self.train_dataset))
+            )
+        if self.config.max_test_examples is not None:
+            import random
+            random.seed(42)
+            self.test_dataset = random.sample(
+                self.test_dataset,
+                min(self.config.max_test_examples, len(self.test_dataset))
+            )
 
     def get_system_prompt(self, example: Dict[str, Any]) -> str:
         """Render system prompt with example variables"""

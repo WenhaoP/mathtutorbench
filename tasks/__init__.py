@@ -1,4 +1,5 @@
 from .gsm8k import GSM8K
+from .compet_math import CompetitionMath
 from .socratic_questioning import SocraticQuestioningTask
 from .mistake_location import MistakeLocationTask
 from .solution_correctness import SolutionCorrectnessTask
