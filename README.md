@@ -94,6 +94,19 @@ python visualize.py --results_dir results/
 <img src="./images/figure2.png" alt="Skills" width="800">
 
 
+### 4. Reproducing Table 4 (standalone script)
+`run_table4.py` runs the full Table 4 experiment locally: all tasks for LLaMA 3.2 3B, LLaMA 3.1 8B, Qwen2.5-Math-7B, Qwen2.5-7B, Qwen2-Math-7B, Qwen2-7B, and SocraticLM, then the pedagogical reward model, and prints the table. Run from the repo root (e.g. `math-main`). Requires `HF_TOKEN` (or `HUGGING_FACE_HUB_TOKEN`) for gated models.
+
+```bash
+export HF_TOKEN=your_token   # for gated models (Llama, etc.)
+python run_table4.py                     # full run
+python run_table4.py --max-examples 20   # quick run (cap examples per task)
+python run_table4.py --no-cache          # ignore cached results
+```
+
+Results are cached in `cached_table4_rows/` so re-runs reuse completed models/tasks.
+
+
 ## Installation
 ```bash
 pip install -r requirements.txt
