@@ -13,6 +13,7 @@ This file summarizes the currently reproduced pedagogical evaluation results for
 | Model | Competition Math Accuracy |
 | --- | ---: |
 | GPT-4o-mini-2024-07-18 | 0.8860 |
+| GPT-4o | 0.8893 |
 
 ## Source Artifacts
 
