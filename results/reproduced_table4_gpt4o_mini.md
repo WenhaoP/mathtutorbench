@@ -8,10 +8,17 @@ This file summarizes the currently reproduced pedagogical evaluation results for
 | --- | ---: | ---: | ---: | ---: |
 | GPT-4o-mini-2024-07-18 | 0.5243 | 0.8435 | 0.4771 | 0.7278 |
 
+## Additional Competition Math Result
+
+| Model | Competition Math Accuracy |
+| --- | ---: |
+| GPT-4o-mini-2024-07-18 | 0.8860 |
+
 ## Source Artifacts
 
 - Reward-model scoring JSONs were saved under `/content/drive/MyDrive/mathtutorbench_repro/scaffolding_scores/`
 - Generation files were saved under `/content/drive/MyDrive/mathtutorbench_repro/results/`
+- Competition Math result was saved under `/content/drive/MyDrive/mathtutorbench_repro/competition_math_results/`
 
 ## Notes
 
