@@ -6,6 +6,8 @@
 ## Overview
 **MathTutorBench** is a benchmark which provides a unified framework for evaluating open-ended pedagogical capabilities of large langauge models (LLMs) tutors across three high level teacher skills and seven concrete tasks.
 
+This repository is a fork of the original project and includes additional experiments and reproduction scripts beyond the original release.
+
 
 ## Key Features
 - **Automatic Evaluation**: The benchmark is designed to be run automatically on any new models you are developing.
@@ -106,35 +108,52 @@ python run_table4.py --no-cache          # ignore cached results
 
 Results are cached in `cached_table4_rows/` so re-runs reuse completed models/tasks.
 
+## Reproducibility instructions (this fork)
 
-## Installation
+This fork includes focused reproducibility instructions and example commands to reproduce the experiments from the original paper and runs included in this repository. The repository already contains task definitions, dataloaders, example scripts and a reward-model training/evaluation pipeline. If you need additional help reproducing a specific experiment, open an issue with the experiment name.
+
+Required items and commands to reproduce experiments in this repository:
+
+- **Dependencies:** Install the Python requirements with:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-## Leaderboard
-| Model | Problem Solving | Socratic Questioning | Solution Correctness | Mistake Location | Mistake Correction | Scaffolding Win Rate | Pedagogy IF Win Rate | Scaffolding (Hard) | Pedagogy IF (Hard) |
-|--------|----------------|----------------------|----------------------|------------------|-------------------|------------------|-----------------|----------------|------------------|
-| LLaMA3.2-3B-Instruct | 0.60 | 0.29 | 0.67 | 0.41 | 0.13 | **0.64** | 0.63 | 0.45 | 0.40 |
-| LLaMA3.1-8B-Instruct | 0.70 | 0.29 | 0.63 | 0.29 | 0.09 | 0.61 | 0.67 | 0.46 | 0.49 |
-| LLaMA3.1-70B-Instruct | 0.91 | 0.29 | 0.71 | 0.56 | 0.19 | 0.63 | 0.70 | 0.49 | 0.49 |
-| GPT-4o | 0.90 | **0.48** | 0.67 | 0.37 | **0.84** | 0.50 | **0.82** | 0.46 | **0.70** |
-| LearnLM-1.5-Pro | **0.94** | 0.32 | **0.75** | **0.57** | 0.74 | **0.64** | 0.68 | **0.66** | 0.67 |
-| Llemma-7B-ScienceTutor | 0.62 | 0.29 | 0.66 | 0.29 | 0.16 | 0.37 | 0.48 | 0.38 | 0.42 |
-| Qwen2.5-7B-SocraticLM | 0.73 | 0.32 | 0.05 | 0.39 | 0.23 | 0.39 | 0.39 | 0.28 | 0.28 |
-| Qwen2.5-Math-7B-Instruct | 0.88 | 0.35 | 0.43 | 0.47 | 0.49 | 0.06 | 0.07 | 0.05 | 0.05 |
+- **Data download (where applicable):**
+  - The repository includes example dataset files under the `datasets/` folder (e.g., `datasets/mathdial_bridge*.json`).
+  - The pedagogical reward-model dataset is available on Hugging Face at [`dmacjam/pedagogical-rewardmodel-data`](https://huggingface.co/datasets/dmacjam/pedagogical-rewardmodel-data). Download it with the `datasets` library:
 
+- **Preprocessing code + command:**
+  - Preprocessing and data loading are implemented in the `dataloaders/` package (`dataloaders/base.py`, `dataloaders/mathbridge.py`) and integrated into task runners. For most workflows the preprocessing step is already handled when you run `main.py` for a task. Example task run (which will invoke the repo's data loading logic):
 
-## Submit your model to leaderboard
-To submit your model to the leaderboard, please follow the steps below:
-1. Open a new issue with the title `Leaderboard Submission: <Model Name>`.
-2. Provide the exact model name on the Huggingface hub and if specific code/arguments/settings are needed for the model or the vllm library which will be used to run your model. Please copy the results from the local run of the model.
+  ```bash
+  python main.py --tasks mistake_correction.yaml --provider completion_api --model_args model=gpt-4o-mini-2024-07-18,api_key=<API_KEY>
+  ```
 
-## Adding a New Task
-Please open a new PR and provide the configuration of the task in the `configs` folder and the task implementation in the `tasks` folder.
+  - If you add a custom preprocessing pipeline, place it under `dataloaders/` or provide a small CLI wrapper that outputs processed JSON that the `tasks` expect.
 
-# Scaffolding Score Pedagogical Reward Model
-- [Dataset](https://huggingface.co/datasets/dmacjam/pedagogical-rewardmodel-data) used to train and evaluate the Scaffolding score reward model
+- **Training code + command:**
+  - Reward-model training is available in `reward_model/train_reward_model.py`. To run training (example):
+
+  ```bash
+  python reward_model/train_reward_model.py
+  ```
+
+  - See `reward_model/README.md` for additional training hyperparameters and configuration options.
+
+- **Evaluation code + command:**
+  - Compute the pedagogical/Scaffolding win-rate (reward-model evaluation) with:
+
+  ```bash
+  python reward_model/compute_scaffolding_score.py --data_path results/generations-<model>.json
+  ```
+
+  - To run tasks and produce model outputs (used as input to evaluation), use `main.py` as shown above. See the top of this README for example task runs.
+
+- **Pretrained models/checkpoints:**
+  - This repository (and the original repository) does not include large pretrained model checkpoints.
+
 
 ## Citation
 Please cite as:
