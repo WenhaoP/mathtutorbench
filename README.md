@@ -8,6 +8,13 @@
 
 This repository is a fork of the original project and includes additional experiments and reproduction scripts beyond the original release.
 
+New and updated files in this fork (brief):
+
+- `configs/competition_math.yaml`: configuration for running the competition-math integration experiments included with this fork.
+- `reward_model/`: reward-model code and utilities (training, evaluation, and the scaffolding-score scripts) used to compute pedagogical win-rates.
+- `COMPETITION_MATH_INTEGRATION.md`: documentation describing the competition-math integration, data sources, and experiment instructions.
+- `run_table4.py`: a convenience script that reproduces the Table 4 experiment from the paper across multiple models and computes cached results.
+
 
 ## Key Features
 - **Automatic Evaluation**: The benchmark is designed to be run automatically on any new models you are developing.
